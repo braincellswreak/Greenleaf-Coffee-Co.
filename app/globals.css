@@ -2,26 +2,148 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply bg-[#050505] text-white/60 antialiased selection:bg-white/20 selection:text-white;
   }
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+html {
+  scroll-behavior: smooth;
+  /* Fixed navbar height compensation for anchor jumps */
+  scroll-padding-top: 5rem;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Custom dark scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050505;
+}
+::-webkit-scrollbar-thumb {
+  background: #333;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Cursor FX */
+body {
+  --cursor-scale: 1;
+}
+
+body.cursor-fx-hidden {
+  cursor: none;
+}
+
+.cursor-fx-dot,
+.cursor-fx-ring,
+.cursor-fx-trail {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.cursor-fx-dot {
+  width: calc(7px * var(--cursor-scale));
+  height: calc(7px * var(--cursor-scale));
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 22px rgba(255, 255, 255, 0.16);
+  transform: translate(-50%, -50%);
+  will-change: transform;
+}
+
+.cursor-fx-ring {
+  width: calc(34px * var(--cursor-scale));
+  height: calc(34px * var(--cursor-scale));
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.55);
+  background: radial-gradient(
+    circle,
+    rgba(255, 255, 255, 0.14) 0%,
+    rgba(255, 255, 255, 0.04) 45%,
+    rgba(255, 255, 255, 0.0) 70%
+  );
+  transform: translate(-50%, -50%) scale(1);
+  will-change: transform;
+}
+
+.cursor-fx-trail {
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.25);
+  mix-blend-mode: screen;
+  transform: translate(-50%, -50%);
+  will-change: transform;
+  filter: blur(0.2px);
+}
+
+.cursor-fx-ripple {
+  position: fixed;
+  width: calc(10px * var(--cursor-scale));
+  height: calc(10px * var(--cursor-scale));
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 10000;
+  animation: cursorRipple 0.7s ease-out forwards;
+}
+
+@keyframes cursorRipple {
+  0% {
+    opacity: 0.9;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(3.4);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.cursor-fx-hidden {
+    cursor: auto;
+  }
+  .cursor-fx-ripple,
+  .cursor-fx-trail,
+  .cursor-fx-dot,
+  .cursor-fx-ring {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    --cursor-scale: 0.86;
+  }
+}
+
+@media (max-width: 640px) {
+  body {
+    --cursor-scale: 0.78;
+  }
+}
+
+@media (max-width: 420px) {
+  body {
+    --cursor-scale: 0.68;
+  }
+}
+
+/* Better responsiveness: disable FX on touch/coarse pointer devices. */
+@media (pointer: coarse), (hover: none) {
+  body.cursor-fx-hidden {
+    cursor: auto;
+  }
+  .cursor-fx-ripple,
+  .cursor-fx-trail,
+  .cursor-fx-dot,
+  .cursor-fx-ring {
+    display: none;
   }
 }
